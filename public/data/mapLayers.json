@@ -2,7 +2,7 @@
   {
     "id": "blue",
     "name": "파란색 단속구간",
-    "imageUrl": "/maps/sinsigaji.jpg",
+    "imageUrl": "maps/sinsigaji.jpg",
     "available": true,
     "weekdayTime": "평일 07:30 ~ 19:00",
     "weekendHolidayTime": "주말·공휴일 09:00 ~ 18:00",
@@ -11,7 +11,7 @@
   {
     "id": "red",
     "name": "빨간색 단속구간",
-    "imageUrl": "/maps/red-map-placeholder.jpg",
+    "imageUrl": "maps/red-map-placeholder.jpg",
     "available": false,
     "weekdayTime": "평일 07:30 ~ 21:00",
     "weekendHolidayTime": "주말·공휴일 09:00 ~ 18:00",
