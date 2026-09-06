@@ -88,7 +88,7 @@ export default function MapViewer({
         className="leaflet-map"
       >
         {selectedLayer.available ? (
-          <ImageOverlay url={selectedLayer.imageUrl} bounds={bounds} />
+          <ImageOverlay url={`${import.meta.env.BASE_URL}${selectedLayer.imageUrl}`} bounds={bounds} />
         ) : (
           <div className="map-placeholder">아직 추가되지 않은 지도입니다.</div>
         )}
