@@ -17,12 +17,14 @@ export default function App() {
   const [lastClick, setLastClick] = useState(null);
 
   useEffect(() => {
-    fetch('/data/cctv.json')
+   // fetch('/data/cctv.json')
+    fetch(`${import.meta.env.BASE_URL}data/cctv.json`)
       .then((response) => response.json())
       .then(setCctvList)
       .catch((error) => console.error('CCTV 데이터를 불러오지 못했습니다.', error));
 
-    fetch('/data/mapLayers.json')
+    //fetch('/data/mapLayers.json')
+    fetch(`${import.meta.env.BASE_URL}data/mapLayers.json`)
       .then((response) => response.json())
       .then(setMapLayers)
       .catch((error) => console.error('지도 레이어 데이터를 불러오지 못했습니다.', error));
