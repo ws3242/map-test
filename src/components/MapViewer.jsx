@@ -1,129 +1,101 @@
-import { useEffect, useMemo, useRef } from 'react';
-import { CircleMarker, ImageOverlay, MapContainer, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
+import { useEffect } from 'react';
+import { CircleMarker, ImageOverlay, MapContainer, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
-function FitBoundsButton({ bounds }) {
-  const map = useMap();
-
-  return (
-    <button
-      className="map-control-button fit-button"
-      type="button"
-      onClick={() => map.fitBounds(bounds)}
-    >
-      전체 보기
-    </button>
-  );
-}
-
-function MoveToSelected({ selectedTarget }) {
+function MoveToSelectedCctv({ selectedCctv }) {
   const map = useMap();
 
   useEffect(() => {
-    if (!selectedTarget) {
+    if (!selectedCctv) {
       return;
     }
 
-    map.setView([selectedTarget.y, selectedTarget.x], Math.max(map.getZoom(), 1), {
+    map.setView([selectedCctv.y, selectedCctv.x], 1, {
       animate: true
     });
-  }, [map, selectedTarget]);
+  }, [map, selectedCctv]);
 
   return null;
 }
 
-function MapClickLogger({ devMode, onMapClick }) {
+function CoordinatePicker({ enabled, onPick }) {
   useMapEvents({
     click(event) {
-      if (!devMode) {
+      if (!enabled) {
         return;
       }
 
-      const nextClick = {
-        x: Math.round(event.latlng.lng),
-        y: Math.round(event.latlng.lat)
-      };
+      const x = Math.round(event.latlng.lng);
+      const y = Math.round(event.latlng.lat);
 
-      onMapClick(nextClick);
-      console.log('이미지 좌표:', nextClick);
+      onPick({ x, y });
     }
   });
 
   return null;
 }
 
-export default function MapViewer({
+function MapViewer({
   imageSize,
   selectedLayer,
-  cctvList,
-  selectedTarget,
-  devMode,
-  onMapClick
+  cctvs = [],
+  selectedCctv,
+  coordinateMode,
+  onCoordinatePick
 }) {
-  const mapRef = useRef(null);
+  const bounds = [
+    [0, 0],
+    [imageSize.height, imageSize.width]
+  ];
 
-  const bounds = useMemo(() => {
-    return [
-      [0, 0],
-      [imageSize.height, imageSize.width]
-    ];
-  }, [imageSize.height, imageSize.width]);
-
-  if (!selectedLayer) {
-    return <div className="map-placeholder">지도 데이터를 불러오는 중입니다.</div>;
-  }
+  const imageUrl = `${import.meta.env.BASE_URL}${selectedLayer.imageUrl}`;
 
   return (
-    <div className="map-wrapper">
-      <MapContainer
-        ref={mapRef}
-        crs={L.CRS.Simple}
-        bounds={bounds}
-        maxBounds={bounds}
-        maxBoundsViscosity={0.7}
-        minZoom={-1}
-        maxZoom={4}
-        zoomSnap={0.25}
-        wheelPxPerZoomLevel={90}
-        className="leaflet-map"
-      >
-        {selectedLayer.available ? (
-          <ImageOverlay url={`${import.meta.env.BASE_URL}${selectedLayer.imageUrl}`} bounds={bounds} />
-        ) : (
-          <div className="map-placeholder">아직 추가되지 않은 지도입니다.</div>
-        )}
+    <MapContainer
+      className="map-container"
+      crs={L.CRS.Simple}
+      bounds={bounds}
+      maxBounds={bounds}
+      minZoom={-1}
+      maxZoom={4}
+      zoomSnap={0.25}
+      wheelPxPerZoomLevel={80}
+    >
+      <ImageOverlay url={imageUrl} bounds={bounds} />
 
-        {selectedLayer.id === 'blue' && cctvList.map((cctv) => (
-         <CircleMarker
-  key={cctv.id}
-  center={[cctv.y, cctv.x]}
-  radius={5}
-  pathOptions={{
-    color: '#dc2626',
-    weight: 2,
-    fillColor: '#ffffff',
-    fillOpacity: 0.15
-  }}
->
+      {cctvs.map((cctv) => (
+        <CircleMarker
+          key={cctv.id}
+          center={[cctv.y, cctv.x]}
+          radius={5}
+          pathOptions={{
+            color: '#dc2626',
+            weight: 2,
+            fillColor: '#ffffff',
+            fillOpacity: 0.15
+          }}
+        >
+          <Popup>
+            <div className="cctv-popup">
+              <strong>{cctv.name}</strong>
+              <p>{cctv.memo}</p>
+              <p>
+                x {cctv.x}, y {cctv.y}
+              </p>
+            </div>
+          </Popup>
+        </CircleMarker>
+      ))}
 
-            <Tooltip direction="top" offset={[0, -6]} opacity={0.95}>
-              {cctv.name}
-            </Tooltip>
-            <Popup>
-              <div className="popup-content">
-                <strong>{cctv.name}</strong>
-                <span>유형: 고정식 불법주정차 단속 CCTV</span>
-                <span>좌표: x {cctv.x}, y {cctv.y}</span>
-                <span>{cctv.memo}</span>
-              </div>
-            </Popup>
-          </CircleMarker>
-        ))}
+      <MoveToSelectedCctv selectedCctv={selectedCctv} />
 
-        <FitBoundsButton bounds={bounds} />
-        <MoveToSelected selectedTarget={selectedTarget} />
-        <MapClickLogger devMode={devMode} onMapClick={onMapClick} />
-      </MapContainer>
-    </div>
+      <CoordinatePicker
+        enabled={coordinateMode}
+        onPick={onCoordinatePick}
+      />
+    </MapContainer>
   );
 }
+
+export default MapViewer;
