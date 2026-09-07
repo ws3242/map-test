@@ -38,10 +38,10 @@ function App() {
         const layersData = await layersResponse.json();
         const cctvData = await cctvResponse.json();
 
-        setLayers(layersData);
-        setCctvs(cctvData);
+        setLayers(Array.isArray(layersData) ? layersData : []);
+        setCctvs(Array.isArray(cctvData) ? cctvData : []);
       } catch (error) {
-        setLoadError(error.message);
+        setLoadError(error instanceof Error ? error.message : '데이터를 불러오지 못했습니다.');
       }
     }
 
@@ -49,13 +49,17 @@ function App() {
   }, []);
 
   const selectedLayer = useMemo(() => {
+    if (!layers.length) {
+      return null;
+    }
+
     return layers.find((layer) => layer.id === selectedLayerId) || layers[0];
   }, [layers, selectedLayerId]);
 
   return (
     <div className="app-shell">
       <header className="app-header">
-        <div>
+        <div className="header-title">
           <h1>서귀포시 불법주정차 단속구간</h1>
           <p>이미지 기반 조회용 지도입니다. 위치명과 CCTV 번호는 추후 수정할 수 있습니다.</p>
         </div>
@@ -90,6 +94,7 @@ function App() {
           cctvs={cctvs}
           onSelectCctv={(cctv) => {
             setSelectedCctv(cctv);
+
             if (window.innerWidth <= 768) {
               setSidebarOpen(false);
             }
