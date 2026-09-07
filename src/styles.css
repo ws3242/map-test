@@ -44,6 +44,10 @@ input {
   background: #ffffff;
 }
 
+.header-title {
+  min-width: 0;
+}
+
 .app-header h1 {
   margin: 0 0 4px;
   font-size: 22px;
