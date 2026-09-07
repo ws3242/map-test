@@ -1,10 +1,10 @@
 function Sidebar({
   isOpen,
-  layers,
+  layers = [],
   selectedLayerId,
   onSelectLayer,
   selectedLayer,
-  cctvs,
+  cctvs = [],
   onSelectCctv,
   coordinateMode,
   lastCoordinate
@@ -77,12 +77,10 @@ function Sidebar({
           <h2>좌표 확인</h2>
           {coordinateMode ? (
             lastCoordinate ? (
-              <pre className="coordinate-box">
-{`{
+              <pre className="coordinate-box">{`{
   "x": ${lastCoordinate.x},
   "y": ${lastCoordinate.y}
-}`}
-              </pre>
+}`}</pre>
             ) : (
               <p>지도 위 원하는 위치를 클릭하면 이미지 좌표가 표시됩니다.</p>
             )
