@@ -94,17 +94,18 @@ export default function MapViewer({
         )}
 
         {selectedLayer.id === 'blue' && cctvList.map((cctv) => (
-          <CircleMarker
-            key={cctv.id}
-            center={[cctv.y, cctv.x]}
-            radius={9}
-            pathOptions={{
-              color: '#b91c1c',
-              fillColor: '#ef4444',
-              fillOpacity: 0.25,
-              weight: 2
-            }}
-          >
+         <CircleMarker
+  key={cctv.id}
+  center={[cctv.y, cctv.x]}
+  radius={5}
+  pathOptions={{
+    color: '#dc2626',
+    weight: 2,
+    fillColor: '#ffffff',
+    fillOpacity: 0.15
+  }}
+>
+
             <Tooltip direction="top" offset={[0, -6]} opacity={0.95}>
               {cctv.name}
             </Tooltip>
